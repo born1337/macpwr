@@ -480,12 +480,19 @@ func assertionsCmd() *cobra.Command {
 				return
 			}
 
-			display.Section("Assertion Summary")
-			display.KV("Prevent User Idle Display", fmt.Sprintf("%d active", info.Summary.PreventUserIdleDisplay))
-			display.KV("Prevent System Sleep", fmt.Sprintf("%d active", info.Summary.PreventSystemSleep))
-			display.KV("Prevent Display Sleep", fmt.Sprintf("%d active", info.Summary.PreventDisplaySleep))
-			display.KV("External Media", fmt.Sprintf("%d active", info.Summary.ExternalMedia))
-			display.KV("Network Client Active", fmt.Sprintf("%d active", info.Summary.NetworkClientActive))
+			display.Section("Summary")
+			if info.Summary.TotalActive == 0 {
+				display.KV("Status", display.Green+"No assertions preventing sleep"+display.Reset)
+			} else {
+				display.KV("Total Active", fmt.Sprintf("%s%d assertions%s", display.Yellow, info.Summary.TotalActive, display.Reset))
+			}
+
+			display.Section("By Type")
+			display.KV("Prevent User Idle Display", fmt.Sprintf("%d", info.Summary.PreventUserIdleDisplay))
+			display.KV("Prevent System Sleep", fmt.Sprintf("%d", info.Summary.PreventSystemSleep))
+			display.KV("Prevent Display Sleep", fmt.Sprintf("%d", info.Summary.PreventDisplaySleep))
+			display.KV("External Media", fmt.Sprintf("%d", info.Summary.ExternalMedia))
+			display.KV("Network Client Active", fmt.Sprintf("%d", info.Summary.NetworkClientActive))
 
 			display.Section("Active Assertions")
 			if len(info.Active) == 0 {

@@ -79,12 +79,16 @@ func (i *Info) ChargePercent() int {
 	return (i.ActualCurrentCapacity() * 100) / max
 }
 
-// HealthPercent calculates the battery health percentage
+// HealthPercent calculates the battery health percentage (capped at 100%)
 func (i *Info) HealthPercent() int {
 	if i.DesignCapacity <= 0 {
 		return 0
 	}
-	return (i.ActualMaxCapacity() * 100) / i.DesignCapacity
+	health := (i.ActualMaxCapacity() * 100) / i.DesignCapacity
+	if health > 100 {
+		health = 100
+	}
+	return health
 }
 
 // TemperatureCelsius returns the temperature in Celsius

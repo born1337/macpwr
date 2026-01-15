@@ -14,6 +14,7 @@ type Summary struct {
 	PreventDisplaySleep    int
 	ExternalMedia          int
 	NetworkClientActive    int
+	TotalActive            int
 }
 
 // Assertion represents a single power assertion
@@ -46,6 +47,9 @@ func Get() (*Info, error) {
 	data := string(output)
 	info := &Info{}
 
+	// Parse active assertions first to get total count
+	info.Active = parseAssertions(data)
+
 	// Parse summary counts
 	info.Summary = Summary{
 		PreventUserIdleDisplay: parseCount(data, "PreventUserIdleDisplaySleep"),
@@ -53,10 +57,8 @@ func Get() (*Info, error) {
 		PreventDisplaySleep:    parseCount(data, "PreventDisplaySleep"),
 		ExternalMedia:          parseCount(data, "ExternalMedia"),
 		NetworkClientActive:    parseCount(data, "NetworkClientActive"),
+		TotalActive:            len(info.Active),
 	}
-
-	// Parse active assertions
-	info.Active = parseAssertions(data)
 
 	// Get scheduled events
 	info.Scheduled = getScheduledEvents()
