@@ -68,7 +68,38 @@ func TableHeader() {
 
 // TableRow prints a table row
 func TableRow(setting, battery, ac string) {
-	fmt.Printf("│ %-23s │ %-12s │ %-12s │\n", setting, battery, ac)
+	// Pad values accounting for invisible ANSI codes
+	fmt.Printf("│ %-23s │ %s │ %s │\n", setting, padWithColor(battery, 12), padWithColor(ac, 12))
+}
+
+// padWithColor pads a string to width, accounting for ANSI escape codes
+func padWithColor(s string, width int) string {
+	// Calculate visible length (without ANSI codes)
+	visible := visibleLen(s)
+	if visible >= width {
+		return s
+	}
+	return s + strings.Repeat(" ", width-visible)
+}
+
+// visibleLen returns the visible length of a string (excluding ANSI codes)
+func visibleLen(s string) int {
+	inEscape := false
+	count := 0
+	for _, r := range s {
+		if r == '\033' {
+			inEscape = true
+			continue
+		}
+		if inEscape {
+			if r == 'm' {
+				inEscape = false
+			}
+			continue
+		}
+		count++
+	}
+	return count
 }
 
 // TableSep prints a table separator
